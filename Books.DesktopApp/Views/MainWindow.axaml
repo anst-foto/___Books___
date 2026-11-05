@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Books.DesktopApp.ViewModels"
+        xmlns:m="using:Books.DesktopApp.Models"
+
+        x:Class="Books.DesktopApp.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Books.DesktopApp">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <DataTemplate x:Key="Template_Book"
+                      DataType="{x:Type TypeName=m:Book}">
+            <TextBlock>
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="#{0}: {1}">
+                        <Binding Path="ShortId"
+                                 Mode="OneWay"
+                                 UpdateSourceTrigger="PropertyChanged" />
+                        <Binding Path="Title"
+                                 Mode="OneWay"
+                                 UpdateSourceTrigger="PropertyChanged" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Загрузить"
+                      ToolTip.Tip="Загрузить данные из БД"
+                      ToolTip.Placement="Bottom"
+                      Command="{Binding Path=LoadCommand}" />
+        </Menu>
+
+        <StackPanel Orientation="Horizontal"
+                    DockPanel.Dock="Bottom">
+            <ProgressBar />
+            <TextBlock Text="{Binding Path=Status, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*, 2*">
+            <ListBox ItemsSource="{Binding Path=Books}"
+                     ItemTemplate="{StaticResource ResourceKey=Template_Book}"
+                     SelectionMode="Single"
+                     SelectedItem="{Binding Path=SelectedBook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Column="0" />
+
+            <StackPanel Orientation="Vertical" Grid.Column="1" Spacing="8">
+                <Grid ColumnDefinitions="*, 2.5*">
+                    <Label Content="ID" Grid.Column="0" />
+                    <TextBox Text="{Binding Id, Mode=OneWay}"
+                             IsReadOnly="True" IsEnabled="False" Grid.Column="1" />
+                </Grid>
+                <Grid ColumnDefinitions="*, 2.5*">
+                    <Label Content="Название книги" Grid.Column="0" />
+                    <TextBox Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Grid.Column="1" />
+                </Grid>
+                <Grid ColumnDefinitions="*, 2.5*">
+                    <Label Content="Авторы (через запятую)" Grid.Column="0" />
+                    <TextBox Text="{Binding Authors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Grid.Column="1" />
+                </Grid>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="Сохранить" Command="{Binding SaveCommand}" />
+                    <Button Content="Удалить выбранную" Command="{Binding DeleteCommand}"
+                            IsEnabled="{Binding IsEditing}" />
+                    <Button Content="Очистить форму" Command="{Binding ClearFormCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Books.DesktopApp/Books.DesktopApp.csproj"/>
+  <Project Path="Books.WebApi/Books.WebApi.csproj"/>
+</Solution>
